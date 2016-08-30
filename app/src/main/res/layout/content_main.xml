@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="q6.trainticket.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/depart_string"
+        android:id="@+id/depart_label"
+        android:layout_marginTop="28dp"
+        android:layout_below="@+id/id_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/arrive_string"
+        android:id="@+id/arrive_label"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/depart_label"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/id_string"
+        android:id="@+id/id_label"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/date_string"
+        android:id="@+id/date_label"
+        android:layout_below="@+id/arrive_label"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="24dp"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/trainno_string"
+        android:id="@+id/trainno_label"
+        android:layout_below="@+id/date_label"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="27dp"
+        android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/quantity_string"
+        android:id="@+id/quantity_label"
+        android:layout_below="@+id/trainno_label"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="24dp"
+        android:layout_alignParentLeft="true" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/id_text"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/id_label"
+        android:layout_toEndOf="@+id/id_label"
+        android:layout_marginTop="-10dp" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/trainno_text"
+        android:layout_alignTop="@+id/trainno_label"
+        android:layout_toRightOf="@+id/trainno_label"
+        android:layout_toEndOf="@+id/trainno_label"
+        android:layout_marginTop="-10dp" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/depart_spinner"
+        android:spinnerMode="dropdown"
+        android:layout_alignTop="@+id/depart_label"
+        android:layout_toRightOf="@+id/depart_label"
+        android:layout_toEndOf="@+id/depart_label" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/arrive_spinner"
+        android:spinnerMode="dropdown"
+        android:layout_alignTop="@+id/arrive_label"
+        android:layout_toRightOf="@+id/arrive_label"
+        android:layout_toEndOf="@+id/arrive_label" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/date_spinner"
+        android:spinnerMode="dropdown"
+        android:layout_alignTop="@+id/date_label"
+        android:layout_toRightOf="@+id/date_label"
+        android:layout_toEndOf="@+id/date_label" />
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/quantity_spinner"
+        android:spinnerMode="dropdown"
+        android:layout_alignTop="@+id/quantity_label"
+        android:layout_toRightOf="@+id/quantity_label"
+        android:layout_toEndOf="@+id/quantity_label" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_string"
+        android:id="@+id/start_button"
+        android:layout_below="@+id/quantity_spinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="43dp" />
+
+</RelativeLayout>

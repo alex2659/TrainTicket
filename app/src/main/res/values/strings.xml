@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">TrainTicket</string>
+    <string name="action_settings">Settings</string>
+    <string name="depart_string">Depart: </string>
+    <string name="arrive_string">Arrive: </string>
+    <string name="id_string">ID: </string>
+    <string name="date_string">Date: </string>
+    <string name="trainno_string">Train No.: </string>
+    <string name="quantity_string">Quantity: </string>
+    <string name="start_string">START</string>
+
+    <string name="title_activity_booking">BookingActivity</string>
+    <string name="fail_string">Failure Counter: </string>
+    <string name="captcha_string">Captcha: </string>
+    <string name="partition_string">Partition: </string>
+    <string name="decode_string">Decode: </string>
+    <string name="console_string">Console: </string>
+
+    <string name="no_network">             Network is NOT available now!!\nPlease remember to start network connection.</string>
+    <string name="network_not_stable_in_menu">  Network is not stable now.\nThe menu cannot be loaded.</string>
+    <string name="network_resume_in_menu">    Network comes back.\nThe menu is being loaded.</string>
+    <string name="network_not_stable_in_booking">       Network is no stable now.\nThe booking procedure is paused.</string>
+    <string name="network_resume_in_booking">               Network comes back.\nThe booking procedure is continued.</string>
+
+</resources>
