@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created by Alan on 2016/8/7.
@@ -20,7 +21,6 @@ public class GetMenuThread extends Thread {
             URL url = new URL("http://railway.hinet.net/ctno1.htm");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            connection.setDoOutput(true);
 
             /* Set Header Information */
             connection.setRequestProperty("Host", "railway.hinet.net");
@@ -34,7 +34,7 @@ public class GetMenuThread extends Thread {
 
             /* Start To Receive */
             InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "big5"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(in), "big5"));
             String inputLine;
             while ((inputLine = reader.readLine()) != null)
                 result += inputLine;

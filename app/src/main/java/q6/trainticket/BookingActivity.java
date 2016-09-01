@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.zip.GZIPInputStream;
 
 /* http://stackoverflow.com/questions/6049882/how-to-textview-settext-from-thread */
 /* http://xxs4129.pixnet.net/blog/post/165417214-android%E4%BD%BF%E7%94%A8jsoup%E6%8A%93%E5%8F%96%E7%B6%B2%E9%A0%81%E8%B3%87%E6%96%99 */
@@ -391,7 +392,7 @@ public class BookingActivity extends AppCompatActivity {
 
         /* Start To Receive */
         InputStream in = connection.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "big5"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(in), "big5"));
         String inputLine;
 //            System.out.println("Content-------start-----");
         while ((inputLine = reader.readLine()) != null)
