@@ -35,6 +35,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -189,22 +190,22 @@ public class BookingActivity extends AppCompatActivity {
                             quantity_string = ((quantity_string == null) ? "1" : quantity_string);
 
                             // 開始訂票
-                            List<String> cookies = step1_keyInDataToGrabCaptcha(id_string, date_string, depart_string, arrive_string, quantity_string, trainno_string);
+                            Map<String,String> cookieMap = step1_keyInDataToGrabCaptcha(id_string, date_string, depart_string, arrive_string, quantity_string, trainno_string);
 
                             // 抓取驗證碼圖片
-                            Bitmap img = step2_readyToGetCaptchaImage(cookies);
+                            Bitmap img = step2_readyToGetCaptchaImage(cookieMap);
                             final Drawable captcha_drawable = new BitmapDrawable(getResources(), img);
                             handler.post(new Runnable() {
                                 public void run() {
                                     captcha_image.setImageDrawable(captcha_drawable);
                                 }
                             });
-//                        OutputStream stream = new FileOutputStream(path + "/captcha.png");
-//                        if (captcha_image != null)
-//                            captcha_image.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
+//                            OutputStream stream = new FileOutputStream(path + "/captcha.png");
+//                            if (captcha_image != null)
+//                                captcha_image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
 
                             //處理驗證碼圖片
                             ArrayList<Bitmap> images = ImageProcess.mainProcedure(img);
@@ -235,10 +236,14 @@ public class BookingActivity extends AppCompatActivity {
                                 }
                             });
 
+                            //處理多餘傳輸步驟
+                            String urlString = step3_randomNumber(cookieMap);
+                            step4_randomNumber(urlString);
+
                             //輸入驗證碼並取得資料
                             inCriticalSection = true;
                             if (RUNNING_THREAD == false) break;
-                            step3_sendDataFinally(cookies, result, id_string,
+                            step5_sendDataFinally(cookieMap, result, id_string,
                                     date_string.replace("/", "%2F"), depart_string, arrive_string,
                                     quantity_string, trainno_string);
                             handler.post(new Runnable() {
@@ -265,11 +270,12 @@ public class BookingActivity extends AppCompatActivity {
         bookingThread.start();
     }
 
-    private List<String> step1_keyInDataToGrabCaptcha
+    private Map<String,String> step1_keyInDataToGrabCaptcha
             (String person_id, String getin_date, String from_station, String to_station, String order_qty_str, String train_no) throws Exception
     {
         Map<String, List<String>> headerFields;
         List<String> cookiesHeader;
+        Map<String, String> cookieMap = new HashMap<>();
 
         /* Build Post Connection */
         URL url = new URL("http://railway.hinet.net/check_ctno1.jsp");
@@ -290,6 +296,8 @@ public class BookingActivity extends AppCompatActivity {
         connection.setRequestProperty("Referer", "http://railway.hinet.net/ctno1.htm");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
         connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
+        connection.setRequestProperty("Cookie", "noscript=true");
+        /* noscript=true is very important because we want to use the old format (i.e. without javascript) !! */
 
         /* Send Booking Data */
         HashMap<String, String> postDataParams = new HashMap<>();
@@ -319,27 +327,27 @@ public class BookingActivity extends AppCompatActivity {
         /* Fetch Cookies From Response Header */
         headerFields = connection.getHeaderFields();
         cookiesHeader = headerFields.get("Set-Cookie");
-
-        return cookiesHeader;
+        if(cookiesHeader != null)
+        {
+            for (String cookie : cookiesHeader)
+            {
+                cookie = cookie.split(";")[0];
+                cookieMap.put(cookie.split("=")[0], cookie.split("=")[1]);
+            }
+        }
+        return cookieMap;
     }
 
-    private Bitmap step2_readyToGetCaptchaImage(List<String> cookies) throws Exception
+    private Bitmap step2_readyToGetCaptchaImage(Map<String,String> cookieMap) throws Exception
     {
         Bitmap result;
 
-        /* Generate a random number and append to URL. */
-        String urlString = "http://railway.hinet.net/ImageOut.jsp?pageRandom=0.";
-        Random rdm = new Random();
-        for(int i=0; i<16; i++)
-            urlString += Integer.toString(rdm.nextInt(10));
-
         /* Build Get Connection */
-        URL url = new URL(urlString);
+        URL url = new URL("http://railway.hinet.net/ImageOut.jsp");
         HttpURLConnection connection = (HttpURLConnection)url.openConnection();
         connection.setRequestMethod("GET");
 
         /* Set Header Information */
-        String mycookie = cookies.get(1).split(";")[0] + "; " + cookies.get(0).split(";")[0];
         connection.setRequestProperty("Host","railway.hinet.net");
         connection.setRequestProperty("Connection", "keep-alive");
         connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1; E5353 Build/27.2.A.0.169) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36");
@@ -347,7 +355,14 @@ public class BookingActivity extends AppCompatActivity {
         connection.setRequestProperty("Referer", "http://railway.hinet.net/check_ctno1.jsp");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
         connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
-        connection.setRequestProperty("Cookie", mycookie);
+            // cookie processor
+            String mycookie = "";
+            Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
+            while ( iter.hasNext() ) {
+                Map.Entry<String,String> entry = iter.next();
+                mycookie += ( entry.getKey() + "=" + entry.getValue() + ";" );
+            }
+        connection.setRequestProperty("Cookie", mycookie + "; noscript=true");
 
         /* Start To Receive */
         InputStream in = connection.getInputStream();
@@ -357,7 +372,75 @@ public class BookingActivity extends AppCompatActivity {
         return result;
     }
 
-    private void step3_sendDataFinally (List<String>cookies, String randInput, String person_id,
+    private String step3_randomNumber(Map<String,String> cookieMap)
+    {
+        String urlString = null;
+        try
+        {
+	    	/* Construct URL with random numbers. */
+            urlString = "http://railway.hinet.net/PronounceRandonNumber.do?pageRandom=0.";
+            Random rdm = new Random();
+            for(int i=0; i<17; i++)
+                urlString += Integer.toString(rdm.nextInt(10));
+
+	    	/* Build Get Connection */
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+
+	        /* Set Header Information */
+            connection.setRequestProperty("Host","railway.hinet.net");
+            connection.setRequestProperty("Connection", "keep-alive");
+            connection.setRequestProperty("Accept-Encoding", "identity;q=1, *;q=0");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1; E5353 Build/27.2.A.0.169) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setRequestProperty("Referer", "http://railway.hinet.net/check_ctno1.jsp");
+            connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
+                // cookie processor
+                String mycookie = "";
+                Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
+                while ( iter.hasNext() ) {
+                    Map.Entry<String,String> entry = iter.next();
+                    mycookie += ( entry.getKey() + "=" + entry.getValue() + ";" );
+                }
+            connection.setRequestProperty("Cookie", mycookie + " noscript=true");
+            connection.setRequestProperty("Range", "bytes=0-");
+
+			/* Nothing To Receive, No InputStream Required Here */
+            connection.getHeaderFields();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return urlString;
+    }
+
+    private void step4_randomNumber(String urlString)
+    {
+        try
+        {
+	    	/* Build Get Connection */
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("GET");
+
+	        /* Set Header Information */
+            connection.setRequestProperty("Origin","https://www.gstatic.com");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.1; E5353 Build/27.2.A.0.169) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.81 Mobile Safari/537.36");
+            connection.setRequestProperty("Range", "bytes=0-65536");
+            connection.setRequestProperty("Host","railway.hinet.net");
+            connection.setRequestProperty("Connection", "Keep-Alive");
+            connection.setRequestProperty("Accept-Encoding", "gzip");
+
+			/* Nothing To Receive, No InputStream Required Here */
+            connection.getHeaderFields();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void step5_sendDataFinally (Map<String,String> cookieMap, String randInput, String person_id,
                                        String getin_date, String from_station, String to_station,
                                        String order_qty_str, String train_no) throws Exception
     {
@@ -388,7 +471,14 @@ public class BookingActivity extends AppCompatActivity {
         connection.setRequestProperty("Referer", "http://railway.hinet.net/check_ctno1.jsp");
         connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
         connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
-        connection.setRequestProperty("Cookie", cookies.get(1).split(";")[0] + "; " + cookies.get(0).split(";")[0]);
+            // cookie processor
+            String mycookie = "";
+            Iterator<Map.Entry<String, String>> iter = cookieMap.entrySet().iterator();
+            while ( iter.hasNext() ) {
+                Map.Entry<String,String> entry = iter.next();
+                mycookie += ( entry.getKey() + "=" + entry.getValue() + ";" );
+            }
+        connection.setRequestProperty("Cookie", mycookie + " noscript=true");
 
         /* Start To Receive */
         InputStream in = connection.getInputStream();
