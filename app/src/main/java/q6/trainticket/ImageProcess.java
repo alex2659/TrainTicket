@@ -373,7 +373,7 @@ public class ImageProcess {
 	private int findGrayLineColor(){
 		int reds=0, greens=0, blues=0, numOfPoints=0;
 		boolean status = false;
-		for(int i=1; i<width; i++)
+		for(int i=1; i<width-1; i++)
 		{
 			for(int j=height-1; j>=0; j--)
 			{
