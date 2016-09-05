@@ -432,22 +432,14 @@ public class ImageProcess {
 			for(int j=0; j<bufImage.getHeight(); j++)
 				if( colorDist(bufImage.getPixel(i, j),whiteLineColor)<50 )
 				{
-					int counter=0;
-					for(int p=-1; p<=1; p++)
-						for(int q=-1; q<=1; q++)
-							if( 0<=i+p && i+p<width && 0<=j+q && j+q<height && colorDist(bufImage.getPixel(i+p, j+q),whiteLineColor)<50 )//pointIsWhite(i+p,j+q) )
-								counter++;
-					if( counter<=10 )
-					{
-						if( i>=1 && i<width-1 )
-						{
-							pointList.add(new Point(i,j));
-							if( colorDist(bufImage.getPixel(i+1, j), 0) <= colorDist(bufImage.getPixel(i-1, j), 0) )
-								colorMap.put( pointList.get(pointList.size()-1), bufImage.getPixel(i+1, j) );
-							else
-								colorMap.put( pointList.get(pointList.size()-1), bufImage.getPixel(i-1, j) );
-						}
-					}
+                    if( i>=1 && i<width-1 )
+                    {
+                        pointList.add(new Point(i,j));
+                        if( colorDist(bufImage.getPixel(i+1, j), 0) <= colorDist(bufImage.getPixel(i-1, j), 0) )
+                            colorMap.put( pointList.get(pointList.size()-1), bufImage.getPixel(i+1, j) );
+                        else
+                            colorMap.put( pointList.get(pointList.size()-1), bufImage.getPixel(i-1, j) );
+                    }
 				}
 		for (Point temp : pointList)
 			bufImage.setPixel(temp.x, temp.y, colorMap.get(temp));
@@ -460,19 +452,12 @@ public class ImageProcess {
         for (int i = 0; i < bufImage.getWidth(); i++)
             for (int j = 0; j < bufImage.getHeight(); j++)
                 if (colorDist(bufImage.getPixel(i, j), whiteLineColor) < 50) {
-                    int counter = 0;
-                    for (int p = -1; p <= 1; p++)
-                        for (int q = -1; q <= 1; q++)
-                            if (0 <= i + p && i + p < width && 0 <= j + q && j + q < height && colorDist(bufImage.getPixel(i + p, j + q), whiteLineColor) < 50)//pointIsWhite(i+p,j+q) )
-                                counter++;
-                    if (counter <= 10) {
-                        if (j >= 1 && j < height - 1) {
-                            pointList.add(new Point(i, j));
-                            if (colorDist(bufImage.getPixel(i, j + 1), 0) <= colorDist(bufImage.getPixel(i, j - 1), 0))
-                                colorMap.put(pointList.get(pointList.size() - 1), bufImage.getPixel(i, j + 1));
-                            else
-                                colorMap.put(pointList.get(pointList.size() - 1), bufImage.getPixel(i, j - 1));
-                        }
+                    if (j >= 1 && j < height - 1) {
+                        pointList.add(new Point(i, j));
+                        if (colorDist(bufImage.getPixel(i, j + 1), 0) <= colorDist(bufImage.getPixel(i, j - 1), 0))
+                            colorMap.put(pointList.get(pointList.size() - 1), bufImage.getPixel(i, j + 1));
+                        else
+                            colorMap.put(pointList.get(pointList.size() - 1), bufImage.getPixel(i, j - 1));
                     }
                 }
         for (Point temp : pointList)
