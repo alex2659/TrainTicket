@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Created by Alan on 2016/8/7.
@@ -16,6 +19,10 @@ public class GetMenuThread extends Thread {
 
     public void run() {
         try {
+            Map<String, List<String>> headerFields;
+            List<String> cookiesHeader;
+            boolean hasEncoded = false;
+
             /* Build Post Connection */
             URL url = new URL("http://railway.hinet.net/ctno1.htm");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -32,9 +39,15 @@ public class GetMenuThread extends Thread {
             connection.setRequestProperty("Accept-Encoding", "gzip, deflate, sdch");
             connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
 
+            /* Check whether the response content is encoded or not according to the header field. */
+            headerFields = connection.getHeaderFields();
+            cookiesHeader = headerFields.get("Content-Encoding");
+            if(cookiesHeader != null)
+                hasEncoded = true;
+
             /* Start To Receive */
             InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "big5"));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(hasEncoded ? new GZIPInputStream(in) : in, "big5"));
             String inputLine;
             while ((inputLine = reader.readLine()) != null)
                 result += inputLine;
