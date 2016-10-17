@@ -279,7 +279,7 @@ public class BookingActivity extends AppCompatActivity {
         /* Set Header Information */
         connection.setRequestProperty("Host","railway.hinet.net");
         connection.setRequestProperty("Connection", "keep-alive");
-        connection.setRequestProperty("Content-Length", "215");
+        connection.setRequestProperty("Content-Length", Integer.toString( 212+train_no.length() ) );
         connection.setRequestProperty("Cache-Control", "max-age=0");
         connection.setRequestProperty("Origin","http://railway.hinet.net");
         connection.setRequestProperty("Upgrade-Insecure-Requests","1");
