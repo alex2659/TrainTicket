@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.zip.GZIPInputStream;
 
 /* http://stackoverflow.com/questions/6049882/how-to-textview-settext-from-thread */
 /* http://xxs4129.pixnet.net/blog/post/165417214-android%E4%BD%BF%E7%94%A8jsoup%E6%8A%93%E5%8F%96%E7%B6%B2%E9%A0%81%E8%B3%87%E6%96%99 */
@@ -361,6 +362,9 @@ public class BookingActivity extends AppCompatActivity {
                                        String order_qty_str, String train_no) throws Exception
     {
         String result = "";
+        Map<String, List<String>> headerFields;
+        List<String> cookiesHeader;
+        boolean hasEncoded = false;
 
         /* Fetch Data from Input Arguments and Construct URL. */
         String urlString = "http://railway.hinet.net/order_no1.jsp?"
@@ -389,9 +393,15 @@ public class BookingActivity extends AppCompatActivity {
         connection.setRequestProperty("Accept-Language", "zh-TW,zh;q=0.8,en-US;q=0.6,en;q=0.4");
         connection.setRequestProperty("Cookie", cookies.get(1).split(";")[0] + "; " + cookies.get(0).split(";")[0]);
 
+        /* Check whether the response content is encoded or not according to the header field. */
+        headerFields = connection.getHeaderFields();
+        cookiesHeader = headerFields.get("Content-Encoding");
+        if(cookiesHeader != null)
+            hasEncoded = true;
+
         /* Start To Receive */
         InputStream in = connection.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "big5"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(hasEncoded ? new GZIPInputStream(in) : in, "big5"));
         String inputLine;
 //            System.out.println("Content-------start-----");
         while ((inputLine = reader.readLine()) != null)
