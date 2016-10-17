@@ -445,6 +445,9 @@ public class BookingActivity extends AppCompatActivity {
                                        String order_qty_str, String train_no) throws Exception
     {
         String result = "";
+        Map<String, List<String>> headerFields;
+        List<String> cookiesHeader;
+        boolean hasEncoded = false;
 
         /* Fetch Data from Input Arguments and Construct URL. */
         String urlString = "http://railway.hinet.net/order_no1.jsp?"
@@ -480,9 +483,15 @@ public class BookingActivity extends AppCompatActivity {
             }
         connection.setRequestProperty("Cookie", mycookie + " noscript=true");
 
+        /* Check whether the response content is encoded or not according to the header field. */
+        headerFields = connection.getHeaderFields();
+        cookiesHeader = headerFields.get("Content-Encoding");
+        if(cookiesHeader != null)
+            hasEncoded = true;
+
         /* Start To Receive */
         InputStream in = connection.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new GZIPInputStream(in), "big5"));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(hasEncoded ? new GZIPInputStream(in) : in, "big5"));
         String inputLine;
 //            System.out.println("Content-------start-----");
         while ((inputLine = reader.readLine()) != null)
